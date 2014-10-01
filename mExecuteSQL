@@ -1,0 +1,11 @@
+Public Sub ExecuteSQL(ByVal strSQLString As String)
+
+    Dim dbCurrent As DAO.Database
+    
+    Set dbCurrent = CurrentDb
+    
+    dbCurrent.Execute strSQLString
+    
+    Set dbCurrent = Nothing
+
+End Sub
