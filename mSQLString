@@ -1,0 +1,24 @@
+Public Function SQLString1() As String
+
+    Dim strSQLString1 As String
+
+    strSQLString1 = "SELECT [field] " & _
+                    "FROM [table] " & _
+                    "WHERE [field] = 'condition';"
+                    
+    SQLString1 = strSQLString1
+
+End Function
+
+Public Function SQLString2() As String
+
+    Dim strSQLString2 As String
+
+    strSQLString2 = "INSERT INTO [tbl-clean-data] ([source-key], [match-text]) " & _
+                    "SELECT [entry-id], [text-to-parse] " & _
+                    "FROM [tbl-raw-data] " & _
+                    "WHERE [entry-id] = 'condition';"
+    
+    SQLString2 = strSQLString2
+
+End Function
