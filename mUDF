@@ -1,0 +1,55 @@
+Public Function RegexTextParser(strSourceTable As String, _
+                                strDestinationTable As String, _
+                                strDestinationField As String, _
+                                strDestinationKey As String, _
+                                ByVal strSourceField As String, _
+                                ByVal strSourceKey As String) As String
+
+    'strSourceTable = Table with raw data
+    'strDestinationTable = Table to insert parsed data
+    'strDestinationField = Field to insert parsed data
+    'strDestinationKey = Field to insert source key
+    'strSourceField = Field with raw data
+    'strSourceKey = Field with source key that links parsed data back to original entry
+
+    Dim dbCurrent As DAO.Database
+    Dim objRegex As Object
+    Dim objMatch As Object
+    Dim objMatches As Object
+    Dim rsSource As DAO.Recordset
+    Dim rsDestination As DAO.Recordset
+    
+    Set dbCurrent = CurrentDb
+    Set objRegex = CreateObject("VBScript.RegExp")
+    Set rsSource = dbCurrent.OpenRecordset(strSourceTable, dbOpenSnapshot)
+    Set rsDestination = dbCurrent.OpenRecordset(strDestinationTable, dbOpenTable, dbAppendOnly)
+    
+    objRegex.IgnoreCase = True
+    objRegex.Global = True
+    objRegex.Multiline = True
+    objRegex.Pattern = "\b[a-z]{2,3}\d{10,12}\b"
+
+    With rsSource
+        Do While Not .EOF
+            If objRegex.Test(rsSource(strSourceField)) Then
+                Set objMatches = objRegex.Execute(rsSource(strSourceField))
+                For Each objMatch In objMatches
+                    rsDestination.AddNew
+                    rsDestination(strDestinationField) = objMatch.Value
+                    rsDestination(strDestinationKey) = rsSource(strSourceKey)
+                    rsDestination.Update
+                Next
+            End If
+            .MoveNext
+        Loop
+        .Close
+    End With
+    
+    Set rsDestination = Nothing
+    Set rsSource = Nothing
+    Set objMatch = Nothing
+    Set objMatches = Nothing
+    Set objRegex = Nothing
+    Set dbCurrent = Nothing
+    
+End Function
